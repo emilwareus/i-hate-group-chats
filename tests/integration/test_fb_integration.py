@@ -11,6 +11,9 @@ def test_integration():
 
     assert fbi is not None
 
-    convs = fbi.fetch_all_conversations()
+    convs = fbi.fetch_conversations(limit=3, message_limit=10)
 
     assert convs is not None
+
+    # It may not be 3 as some chats dont count
+    assert len(convs) > 1
