@@ -1,4 +1,10 @@
 import fbchat
+from datetime import datetime, timezone
+
+# If an answere is created within 5h
+# it is regarded to belong to the same session
+
+SESSION_TIME = 5 * 60 * 60
 
 
 class FBIntegration:
@@ -48,14 +54,25 @@ class FBIntegration:
 
             messages = thread.fetch_messages(limit=message_limit)
             output[thread.id]["messages"] = []
+
+            session_id = -1
+            last_message = datetime(3021, 1, 1, 1, 1, tzinfo=timezone.utc)
+
             for message in messages:
+                td = last_message - message.created_at
+                if td.total_seconds() >= SESSION_TIME:
+                    session_id += 1
+
                 output[thread.id]["messages"] = [
                     {
                         "text": message.text,
                         "is_me": my_id == message.author,
                         "author": message.author,
                         "created_at": message.created_at,
+                        "session_id": thread.id + "_" + str(session_id),
                     }
                 ] + output[thread.id]["messages"]
+
+                last_message = message.created_at
 
         return output
