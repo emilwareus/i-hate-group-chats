@@ -27,7 +27,8 @@ class FBIntegration:
         my_id = session.user.id
         client = fbchat.Client(session=session)
 
-        # Fetches a list of all users you're currently chatting with, as `User` objects
+        # Fetches a list of all users you're
+        # currently chatting with, as `User` objects
         threads = client.fetch_threads(limit=limit)
 
         output = dict()
