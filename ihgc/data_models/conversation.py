@@ -1,4 +1,20 @@
-from datetime import datetime
+from datetime import datetime, date
+import json
+import re
+
+
+def default_serializer(o):
+    if isinstance(o, (date, datetime)):
+        return o.isoformat()
+
+
+def datetime_parser(dct):
+    for (key, value) in dct.items():
+        try:
+            dct[key] = datetime.fromisoformat(value)
+        except Exception as e:
+            pass
+    return dct
 
 
 class Message:
@@ -46,7 +62,7 @@ class Message:
 
 
 class Conversation:
-    def __init__(self, messages: list, conversation_id: int):
+    def __init__(self, conversation_id: int, messages: list = []):
         """Class object to hold conversation data, which is a sequence of messages
 
         Args:
@@ -70,7 +86,14 @@ class Conversation:
 
 
 class Channel:
-    def __init__(self, conversations: list, channel_id: int):
+    def __init__(
+        self,
+        channel_id: int,
+        conversations: list = [],
+        is_group: bool = False,
+        name: str = "",
+        info: dict = {},
+    ):
         """A channel is a place where we have conversations.
             This can be both 1-on-1 chats and groupchats.
 
@@ -84,8 +107,71 @@ class Channel:
         assert isinstance(channel_id, int)
         self.channel_id = channel_id
 
+        assert isinstance(is_group, bool)
+        self.is_group = is_group
+
+        assert isinstance(name, str)
+        self.name = name
+
+        assert isinstance(info, dict)
+        self.info = info
+
     def to_dict(self):
         return {
+            "name": self.name,
             "channel_id": self.channel_id,
+            "is_group": self.is_group,
             "conversations": [c.to_dict() for c in self.conversations],
+            "info": self.info,
         }
+
+    def from_dict(self, data):
+        self = Channel.from_dict(data)
+        return self
+
+    def from_dict(data):
+
+        assert isinstance(data["channel_id"], int)
+
+        assert isinstance(data["is_group"], bool)
+
+        assert isinstance(data["name"], str)
+
+        assert isinstance(data["info"], dict)
+
+        channel = Channel(
+            channel_id=data["channel_id"],
+            is_group=data["is_group"],
+            name=data["name"],
+            info=data["info"],
+        )
+
+        channel.conversations = [
+            Conversation(
+                conversation_id=conv["conversation_id"],
+                messages=[Message(**message) for message in conv["messages"]],
+            )
+            for conv in data["conversations"]
+        ]
+        return channel
+
+    def write_json(self, filename):
+        data = self.to_dict()
+
+        assert ".json" in filename
+
+        with open(filename, "w") as fp:
+            json.dump(data, fp, default=default_serializer)
+
+    def read_json(self, filename):
+        self = Channel.read_json(filename)
+        return self
+
+    def read_json(filename):
+
+        with open(filename, "r") as fp:
+            data = json.load(fp, object_hook=datetime_parser)
+
+        print(data)
+        channel = Channel.from_dict(data)
+        return channel

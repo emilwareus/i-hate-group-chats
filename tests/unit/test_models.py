@@ -49,3 +49,15 @@ def test_models():
     assert len(channel.conversations[0].messages) == 3
     assert conversation.messages == messages
     assert isinstance(channel.to_dict(), dict)
+
+    channel_dict = channel.to_dict()
+
+    channel_2 = Channel.from_dict(channel_dict)
+
+    assert channel_2.channel_id == channel.channel_id
+
+    channel.write_json("test.json")
+
+    channel_3 = Channel.read_json("test.json")
+
+    assert channel_3.channel_id == channel.channel_id
