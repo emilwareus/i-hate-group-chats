@@ -1,2 +1,0 @@
-git+https://github.com/emilwareus/fbchat.git
-python-dotenv==0.13.0

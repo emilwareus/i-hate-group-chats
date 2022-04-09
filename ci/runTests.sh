@@ -2,8 +2,7 @@
 
 set -e
 
-pip install -r requirements.txt
-pip install -r requirements-test.txt
+poetry install
 
 # Lint
 flake8 ihgc/**/*.py

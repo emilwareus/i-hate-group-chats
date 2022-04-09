@@ -1,5 +1,5 @@
 test:
-	./ci/runTests.sh
+	bash ./ci/runTests.sh
 
 lint: 
 	python -m black .
