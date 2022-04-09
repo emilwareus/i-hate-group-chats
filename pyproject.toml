@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "i-hate-group-chats"
+version = "0.1.0"
+description = "Remove yourself from group chats (without anyone noticing)"
+authors = ["Emil Wåreus"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+python-dotenv = "^0.20.0"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^4.0.1"
+black = "^22.3.0"
+pytest = "^7.1.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
